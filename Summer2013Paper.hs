@@ -49,10 +49,27 @@ distinctPair f x (x1:xs) = if (f x) /= (f x1) then
                           distinctPair f x xs
                           else
                           False
+
+
+-- Alternative solution
+
+isPermutation1 :: Eq a => (a -> a) -> [a] -> Bool
+isPermutation1 f s = isPerm f s s []
+    where   isPerm _ [] _ _ = True
+            isPerm f (x:xs) ys zs = f x `elem` ys 
+                && not( f x `elem` zs) 
+                && isPerm f xs ys (f x:zs)
                           
 --Q4
---inverse not done
--- Not sure about this one. I think inverse should just give the original list back, which is what
--- you take in as s, but that seems too simple. Maybe I'm reading it wrong. -Henry
-inverse :: Eq a => (a -> a) -> [a] -> [a]
-inverse f s = if isPermutation f s then s else error "uh oh"
+-- Still not sure what this does exactly, but I think this is a bit closer at least
+-- inverse f s returns a function g that takes an input x
+-- g x returns the item from s that was pushed through f to get x
+--     e.g. g (f x) = x
+inverse :: Eq a => (a -> a) -> [a] -> a -> a
+inverse f s = if isPermutation1 f s 
+            then inv f s 
+            else error "uh oh"  
+    where inv f (x:xs) = \y -> if (f x) == y
+                                then x
+                                else inv f xs y
+                    
